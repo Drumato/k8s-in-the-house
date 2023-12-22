@@ -5,6 +5,8 @@ repositories:
   url: https://kubernetes.github.io/ingress-nginx
 - name: metallb
   url: https://metallb.github.io/metallb
+- name: argo
+  url: https://argoproj.github.io/argo-helm
 
 releases:
 - name: cilium
@@ -27,3 +29,9 @@ releases:
   version: 4.8.0
   values:
   - values/ingress-nginx.values.yaml
+- name: argo-cd
+  namespace: argo-cd
+  chart: argo/argo-cd
+  version: 5.35.0
+  values:
+  - values/argo.values.yaml
