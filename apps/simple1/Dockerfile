@@ -13,7 +13,7 @@ RUN go mod download
 
 COPY cmd ./
 
-RUN go build -o /simple1 ./cmd/simple1
+RUN go build -o /simple1 ./simple1.go
 
 ##
 ## Deploy
