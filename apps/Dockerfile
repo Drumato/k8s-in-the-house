@@ -11,9 +11,9 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY *.go ./
+COPY cmd ./
 
-RUN go build -o /simple1
+RUN go build -o /simple1 ./cmd/simple1
 
 ##
 ## Deploy

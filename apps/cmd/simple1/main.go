@@ -17,6 +17,7 @@ func getIndex(c echo.Context) error {
 	messages := []string{
 		generateSimple1Message(),
 	}
+
 	return c.JSON(http.StatusOK, Response{Messages: messages})
 }
 
