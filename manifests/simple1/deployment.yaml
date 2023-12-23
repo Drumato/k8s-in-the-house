@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-in-the-house.com/app: simple1
+  name: k8s-in-the-house
+  namespace: k8s-in-the-house
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      k8s-in-the-house.com/app: simple1
+  template:
+    metadata:
+      labels:
+        k8s-in-the-house.com/app: simple1
+    spec:
+      containers:
+      - image: ghcr.io/drumato/k8s-in-the-house:simple1-476be32
+        imagePullPolicy: IfNotPresent
+        name: simple1
+        ports:
+        - name: http
+          containerPort: 1323
+          protocol: TCP
