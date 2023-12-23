@@ -6,12 +6,10 @@ on:
 name: Image Build and Push
 
 jobs:
-  print-working-directory:
-    runs-on: ubuntu-latest
+  publish_docker_image:
     defaults:
       run:
         working-directory: apps/simple1
-  publish_docker_image:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
