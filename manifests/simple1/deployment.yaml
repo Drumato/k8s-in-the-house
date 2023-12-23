@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     k8s-in-the-house.com/app: simple1
-  name: k8s-in-the-house
+  name: simple1
   namespace: k8s-in-the-house
 spec:
   replicas: 3
@@ -19,7 +19,7 @@ spec:
         instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/simple1"
     spec:
       containers:
-      - image: ghcr.io/drumato/k8s-in-the-house:simple1-476be32
+      - image: ghcr.io/drumato/k8s-in-the-house:simple1-latest
         imagePullPolicy: IfNotPresent
         name: simple1
         ports:

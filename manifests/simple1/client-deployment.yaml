@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-in-the-house.com/app: simple1-client
+  name: simple1-client
+  namespace: k8s-in-the-house
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-in-the-house.com/app: simple1-client
+  template:
+    metadata:
+      labels:
+        k8s-in-the-house.com/app: simple1-client
+    spec:
+      containers:
+      - image: ghcr.io/drumato/k8s-in-the-house:simple1-client-latest
+        imagePullPolicy: IfNotPresent
+        name: simple1-client

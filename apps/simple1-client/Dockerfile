@@ -13,7 +13,7 @@ RUN go mod download
 
 COPY *.go .
 
-RUN go build -o /simple1
+RUN go build -o /client
 
 ##
 ## Deploy
@@ -22,11 +22,8 @@ FROM gcr.io/distroless/base-debian12
 
 WORKDIR /
 
-COPY --from=build /simple1 /simple1
-
-EXPOSE 1323
+COPY --from=build /client /client
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/simple1"]
-
+ENTRYPOINT ["/client"]

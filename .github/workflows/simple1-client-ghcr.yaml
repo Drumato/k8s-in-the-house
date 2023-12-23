@@ -3,13 +3,13 @@ on:
     branches:
       - main
 
-name: Simple1 Image Build and Push
+name: Simple1 Client Image Build and Push
 
 jobs:
   publish_docker_image:
     defaults:
       run:
-        working-directory: apps/simple1
+        working-directory: apps/simple1-client
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,10 +21,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker Image
         run: |
-          docker build --tag ghcr.io/drumato/k8s-in-the-house:simple1-latest \
-          --tag ghcr.io/drumato/k8s-in-the-house:simple1-$(echo $GITHUB_SHA | head -c7) \
+          docker build --tag ghcr.io/drumato/k8s-in-the-house:simple1-client-latest \
+          --tag ghcr.io/drumato/k8s-in-the-house:simple1-client-$(echo $GITHUB_SHA | head -c7) \
           .
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/drumato/k8s-in-the-house:simple1-latest
-          docker push ghcr.io/drumato/k8s-in-the-house:simple1-$(echo $GITHUB_SHA | head -c7)
+          docker push ghcr.io/drumato/k8s-in-the-house:simple1-client-latest
+          docker push ghcr.io/drumato/k8s-in-the-house:simple1-client-$(echo $GITHUB_SHA | head -c7)
