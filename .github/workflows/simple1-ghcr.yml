@@ -9,7 +9,7 @@ jobs:
   publish_docker_image:
     defaults:
       run:
-        working-directory: apps/simple1
+        working-directory: ../apps/simple1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
