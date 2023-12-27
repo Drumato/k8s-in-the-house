@@ -7,7 +7,7 @@ metadata:
   annotations:
     ingress.cilium.io/loadbalancer-mode: shared
 spec:
-  ingressClassName: cilium
+  ingressClassName: nginx 
   rules:
   - host: hubble.k8s-in-the-house.com
     http:
