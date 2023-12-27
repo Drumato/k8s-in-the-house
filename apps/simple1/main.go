@@ -3,26 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-
-	"github.com/labstack/echo/v4"
+	"strings"
 )
 
 const simple1Version = "0.1.0"
 
-type Response struct {
-	Messages []string `json:"messages"`
-}
-
-func getIndex(c echo.Context) error {
+func getIndex(w http.ResponseWriter, _ *http.Request) {
 	messages := []string{
 		generateSimple1Message(),
 	}
 
-	return c.JSON(http.StatusOK, Response{Messages: messages})
+	io.WriteString(w, strings.Join(messages, ", "))
 }
 
 func generateSimple1Message() string {
@@ -34,22 +30,19 @@ func main() {
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 
-	r := echo.New()
-	r.GET("/", getIndex)
+	http.HandleFunc("/", getIndex)
 
-	go func() {
-		if err := r.Start(":12345"); err != nil {
-			log.Println(err)
-		}
-	}()
+	// Web サーバーを起動する
+	log.Fatal(http.ListenAndServe(":12345", nil))
 
+	if err := http.ListenAndServe(":12345", nil); err != nil {
+		log.Fatalln(err)
+
+	}
 loopLabel:
 	for {
 		select {
 		case <-ctx.Done():
-			if err := r.Shutdown(ctx); err != nil {
-				log.Println(err)
-			}
 			break loopLabel
 		}
 	}
