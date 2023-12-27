@@ -5,6 +5,6 @@ helmfile sync -f helmfiles/helmfile.yaml
 
 kubectl apply -f manifests/metallb.yaml
 
-cilium connectivity test
+# cilium connectivity test
 
 kubectl apply -f manifests/argocd-ingress.yaml
