@@ -16,7 +16,7 @@ spec:
       debug:
         verbosity: detailed
       otlp:
-        endpoint: "jaeger-collector.jaeger.svc.cluster.local:14250"
+        endpoint: "http://trace-collector-collector.default.svc.cluster.local:4317"
         tls:
           insecure: true
 
