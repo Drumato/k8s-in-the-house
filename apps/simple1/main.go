@@ -16,6 +16,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	// stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -85,7 +86,10 @@ func main() {
 }
 
 func newJaegerExporter(ctx context.Context) (sdktrace.SpanExporter, error) {
-	conn, err := grpc.DialContext(ctx, "trace-collector-collector.default.svc.cluster.local:4317")
+	conn, err := grpc.DialContext(
+		ctx, "trace-collector-collector.default.svc.cluster.local:4317",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		return nil, err
 	}

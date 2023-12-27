@@ -10,7 +10,7 @@ spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: http
+    targetPort: 12345
     name: http
   selector:
     k8s-in-the-house.com/app: simple1

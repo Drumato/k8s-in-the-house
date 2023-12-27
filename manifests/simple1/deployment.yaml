@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - image: ghcr.io/drumato/k8s-in-the-house:simple1-latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: simple1
         ports:
         - name: http
