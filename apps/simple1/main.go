@@ -18,6 +18,20 @@ func getIndex(w http.ResponseWriter, _ *http.Request) {
 		generateSimple1Message(),
 	}
 
+	resp, err := http.Get("http://simple2.k8s-in-the-house.svc.cluster.local/")
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	defer resp.Body.Close()
+
+	simple2, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	messages = append(messages, string(simple2))
 	io.WriteString(w, strings.Join(messages, ", "))
 }
 
