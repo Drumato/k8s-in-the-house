@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
@@ -19,7 +20,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	// stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 )
 
 const simple1Version = "0.1.0"
@@ -29,8 +30,6 @@ type Response struct {
 }
 
 func getIndex(c echo.Context) error {
-	_, span := tracer.Start(c.Request().Context(), "getIndex")
-	defer span.End()
 	messages := []string{
 		generateSimple1Message(),
 	}
@@ -45,16 +44,17 @@ func generateSimple1Message() string {
 var tracer = otel.Tracer("k8s-in-the-house.com/simple1")
 
 func main() {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx := context.Background()
+	sigCtx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 
 	exporter, err := newJaegerExporter(ctx)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	tp, err := newTraceProvider(ctx, exporter)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	tracer = tp.Tracer("k8s-in-the-house.com/simple1")
 	defer func() {
@@ -71,16 +71,18 @@ func main() {
 	r.GET("/", getIndex)
 	go func() {
 		if err = r.Start(":12345"); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}()
 
+loopLabel:
 	for {
 		select {
-		case <-ctx.Done():
-			if err := r.Shutdown(ctx); err != nil {
-				log.Fatal(err)
+		case <-sigCtx.Done():
+			if err := r.Shutdown(sigCtx); err != nil {
+				log.Println(err)
 			}
+			break loopLabel
 		}
 	}
 }
@@ -114,7 +116,7 @@ func newTraceProvider(ctx context.Context, exporter sdktrace.SpanExporter) (*sdk
 
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithBatcher(exporter),
+		sdktrace.WithBatcher(exporter, sdktrace.WithMaxExportBatchSize(1), sdktrace.WithBatchTimeout(10*time.Second), sdktrace.WithExportTimeout(10*time.Second)),
 		sdktrace.WithResource(r),
 	)
 	otel.SetTracerProvider(tp)
@@ -122,4 +124,8 @@ func newTraceProvider(ctx context.Context, exporter sdktrace.SpanExporter) (*sdk
 
 	tp.Tracer("k8s-in-the-house.com/simple1")
 	return tp, nil
+}
+
+func newStdoutExporter() (sdktrace.SpanExporter, error) {
+	return stdout.New(stdout.WithPrettyPrint())
 }
