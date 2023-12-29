@@ -5,7 +5,7 @@ metadata:
   namespace: k8s-in-the-house 
 spec:
   exporter:
-    endpoint: "http://jaeger-collector.jaeger.svc.cluster.local:4317"
+    endpoint: "http://trace-collector-collector.default.svc.cluster.local:4317"
   propagators:
     - tracecontext
     - baggage
