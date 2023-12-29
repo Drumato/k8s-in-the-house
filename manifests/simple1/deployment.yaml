@@ -15,8 +15,8 @@ spec:
       labels:
         k8s-in-the-house.com/app: simple1
       annotations:
-        instrumentation.opentelemetry.io/inject-go: go-instrumentation
-        instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/simple1"
+        # instrumentation.opentelemetry.io/inject-go: go-instrumentation
+        # instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/simple1"
     spec:
       containers:
       - image: ghcr.io/drumato/k8s-in-the-house:simple1-latest
