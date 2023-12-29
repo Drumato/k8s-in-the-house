@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -38,6 +39,21 @@ func getIndex(c echo.Context) error {
 	messages := []string{
 		generateSimple1Message(),
 	}
+
+	resp, err := http.Get("http://simple2.k8s-in-the-house.svc.cluster.local/")
+	if err != nil {
+		c.Logger().Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	defer resp.Body.Close()
+
+	simple2, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.Logger().Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	messages = append(messages, string(simple2))
 
 	return c.JSON(http.StatusOK, Response{Messages: messages})
 }
