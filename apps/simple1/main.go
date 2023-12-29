@@ -12,10 +12,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -30,6 +32,9 @@ type Response struct {
 }
 
 func getIndex(c echo.Context) error {
+	_, span := tracer.Start(c.Request().Context(), "getIndex()", trace.WithAttributes(attribute.String("mode", "manual instrumentation")))
+	defer span.End()
+
 	messages := []string{
 		generateSimple1Message(),
 	}
@@ -89,7 +94,7 @@ loopLabel:
 
 func newJaegerExporter(ctx context.Context) (sdktrace.SpanExporter, error) {
 	conn, err := grpc.DialContext(
-		ctx, "http://trace-collector-collector.default.svc.cluster.local:4317",
+		ctx, "trace-collector-collector.default.svc.cluster.local:4317",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
