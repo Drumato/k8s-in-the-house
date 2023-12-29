@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -25,6 +27,13 @@ loopLabel:
 
 			if resp != nil {
 				log.Println(resp.Status)
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+
+				fmt.Println(string(body))
 			}
 
 			time.Sleep(1 * time.Second)

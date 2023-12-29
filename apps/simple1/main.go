@@ -12,6 +12,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
@@ -28,6 +29,13 @@ import (
 
 const simple1Version = "0.1.0"
 
+var (
+	tracer            = otel.Tracer("k8s-in-the-house.com/simple1")
+	defaultHTTPClient = http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
+)
+
 type Response struct {
 	Messages []string `json:"messages"`
 }
@@ -40,14 +48,19 @@ func getIndex(c echo.Context) error {
 		generateSimple1Message(),
 	}
 
-	resp, err := http.Get("http://simple2.k8s-in-the-house.svc.cluster.local/")
+	simple2Req, err := http.NewRequestWithContext(c.Request().Context(), http.MethodGet, "http://simple2.k8s-in-the-house.svc.cluster.local/", nil)
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	defer resp.Body.Close()
+	simple2Resp, err := defaultHTTPClient.Do(simple2Req)
+	if err != nil {
+		c.Logger().Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	defer simple2Resp.Body.Close()
 
-	simple2, err := io.ReadAll(resp.Body)
+	simple2, err := io.ReadAll(simple2Resp.Body)
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -61,8 +74,6 @@ func getIndex(c echo.Context) error {
 func generateSimple1Message() string {
 	return fmt.Sprintf("Hello from Simple1(v%s)!", simple1Version)
 }
-
-var tracer = otel.Tracer("k8s-in-the-house.com/simple1")
 
 func main() {
 	ctx := context.Background()
