@@ -1,63 +1,27 @@
 repositories:
-- name: cilium
-  url: https://helm.cilium.io
-- name: ingress-nginx
-  url: https://kubernetes.github.io/ingress-nginx
-- name: metallb
-  url: https://metallb.github.io/metallb
 - name: argo
   url: https://argoproj.github.io/argo-helm
 - name: open-telemetry
   url: https://open-telemetry.github.io/opentelemetry-helm-charts
-- name: jetstack
-  url: https://charts.jetstack.io
-- name: jaegertracing
-  url: https://jaegertracing.github.io/helm-charts
+- name: prometheus-community
+  url: https://prometheus-community.github.io/helm-charts
 
 releases:
-- name: cilium
-  namespace: kube-system
-  chart: cilium/cilium
-  version: 1.14.2
-  values:
-  - values/cilium.values.yaml
-- name: metallb
-  namespace: metallb-system
-  createNamespace: true
-  chart: metallb/metallb
-  version: 0.13.12
-  values:
-  - values/metallb.values.yaml
-- name: ingress-nginx
-  namespace: ingress-nginx
-  createNamespace: true
-  chart: ingress-nginx/ingress-nginx
-  version: 4.8.0
-  values:
-  - values/ingress-nginx.values.yaml
 - name: argo-cd
   namespace: argo-cd
   chart: argo/argo-cd
   version: 5.35.0
   values:
   - values/argo.values.yaml
-- name: cert-manager
-  namespace: cert-manager
-  chart: jetstack/cert-manager
-  version: 1.13.2
-  values:
-  - values/cert-manager.values.yaml
 - name: opentelemetry-operator
-  namespace: monitoring
+  namespace: opentelemetry
   chart: open-telemetry/opentelemetry-operator
   version: 0.41.0
-  disableValidation: true
   values:
   - values/opentelemetry-operator.values.yaml
-- name: jaeger-operator
-  namespace: jaeger
-  chart: jaegertracing/jaeger-operator
-  version: 2.49.0
-  disableValidation: true
+- name: kube-prometheus-stack
+  namespace: monitoring
+  chart: prometheus-community/kube-prometheus-stack
+  version: 67.5.0
   values:
-  - values/jaeger-operator.values.yaml
+  - values/kube-prometheus-stack.values.yaml
